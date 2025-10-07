@@ -2,15 +2,14 @@
 
 namespace CityInfo.API.Models
 {
-    public class PointOfInterestForCreationDto
+    public class PointOfInterestForUpdateDto
     {
 
         [Required]
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 
-        [MaxLength(200,ErrorMessage ="Max Length allowed is 200 chars")]
+        [MaxLength(200, ErrorMessage = "Max Length allowed is 200 chars")]
         public string? Description { get; set; }
-
     }
 }
