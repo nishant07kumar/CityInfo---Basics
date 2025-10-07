@@ -24,8 +24,8 @@ namespace CityInfo.API.Controllers
             {
                 return NotFound();
             }
-            
-            if(!_fileExtensionContentTypeProvider.TryGetContentType(filePath, out var contentType) == false)
+
+            if (!_fileExtensionContentTypeProvider.TryGetContentType(filePath, out var contentType) == false)
             {
                 contentType = "application/octet-stream";
             }
@@ -33,6 +33,25 @@ namespace CityInfo.API.Controllers
             var bytes = System.IO.File.ReadAllBytes(filePath);
             return File(bytes, contentType, Path.GetFileName(filePath));
 
+        }
+
+
+
+        [HttpPost]
+        public async Task<ActionResult> CreateFile(IFormFile file)
+        {
+            if (file.Length == 0 || file.Length > 20971520 || file.ContentType != "application/pdf")
+            {
+                return BadRequest("Invalid file lenght for content type.");
+            }
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), $"UploadedFiles_{Guid.NewGuid()}.pdf");
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok("File is Uploaded.");
         }
     }
 }
