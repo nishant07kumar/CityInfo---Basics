@@ -10,17 +10,38 @@ namespace CityInfo.API.Controllers
     public class PointsOfIntrestController : ControllerBase
     {
 
+        private ILogger<PointsOfIntrestController> _logger;
+
+        public PointsOfIntrestController(ILogger<PointsOfIntrestController> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         [HttpGet]
         public ActionResult<IEnumerable<PointOfInterestDto>> GetPointsOfIntrest(int cityId)
         {
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
 
-            if (city == null)
+            try
             {
-                return NotFound();
+                throw new Exception("Exception Example");
+                var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+
+                if (city == null)
+                {
+                    _logger.LogInformation($"City with City id = {cityId} was not found.");
+                    return NotFound();
+                }
+
+                return Ok(city.PointsOfInterest);
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogCritical($"Exception occured in getting city with city id = {cityId}.",ex);
+                return StatusCode(500, "A problem happened while handling your request.");
             }
 
-            return Ok(city.PointsOfInterest);
         }
 
         [HttpGet("{pointofinterestid}", Name = "GetPointOfIntrest")]
@@ -118,9 +139,9 @@ namespace CityInfo.API.Controllers
             };
 
 
-            patchDocument.ApplyTo(pointOfInterestToPatch,ModelState);
+            patchDocument.ApplyTo(pointOfInterestToPatch, ModelState);
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
