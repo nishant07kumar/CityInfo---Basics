@@ -32,10 +32,18 @@ namespace CityInfo.API.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CityWithoutPointsofInterestDto>> GetCity(int id)
+        public async Task<ActionResult> GetCity(int id, bool includePointsOfInterest = false)
         {
-            var cityEntity = await cityInfoRepository.GetCityAsync(id, false);           
+            var cityEntity = await cityInfoRepository.GetCityAsync(id, includePointsOfInterest);
+            if (cityEntity == null)
+            {
+                return NotFound();
+            }
 
+            if (includePointsOfInterest)
+            {
+                return Ok(_mapper.Map<CityDto>(cityEntity));
+            }
             return Ok(_mapper.Map<CityWithoutPointsofInterestDto>(cityEntity));
 
         }
