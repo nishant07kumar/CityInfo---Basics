@@ -1,4 +1,7 @@
-﻿using CityInfo.API.Models;
+﻿using AutoMapper;
+using CityInfo.API.Migrations;
+using CityInfo.API.Models;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,29 +11,32 @@ namespace CityInfo.API.Controllers
     [Route("api/cities")]
     public class CitiesController : ControllerBase
     {
-        private readonly CitiesDataStore _citiesDataStore;
 
-        public CitiesController(CitiesDataStore citiesDataStore)
+        private readonly ICityInfoRepository cityInfoRepository;
+        private readonly IMapper _mapper;
+
+        public CitiesController(ICityInfoRepository cityInfoRepository, IMapper mapper)
         {
-            this._citiesDataStore = citiesDataStore;
+            this.cityInfoRepository = cityInfoRepository ?? throw new ArgumentNullException(nameof(cityInfoRepository));
+            this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
+
+
+
         [HttpGet]
-        public ActionResult<IEnumerable<CityDto>> GetCities()
+        public async Task<ActionResult<IEnumerable<CityWithoutPointsofInterestDto>>> GetCities()
         {
-            return Ok(_citiesDataStore.Cities);
+            var citiesEntity = await cityInfoRepository.GetCitiesAsync();
+            return Ok(_mapper.Map<IEnumerable<CityWithoutPointsofInterestDto>>(citiesEntity));
         }
 
 
         [HttpGet("{id}")]
-        public ActionResult<CityDto> GetCity(int id)
+        public async Task<ActionResult<CityWithoutPointsofInterestDto>> GetCity(int id)
         {
-            var city = _citiesDataStore.Cities.Where(city => city.Id == id).FirstOrDefault();
+            var cityEntity = await cityInfoRepository.GetCityAsync(id, false);           
 
-            if (city == null)
-            {
-                return NotFound();
-            }
-            return Ok(city);
+            return Ok(_mapper.Map<CityWithoutPointsofInterestDto>(cityEntity));
 
         }
     }
