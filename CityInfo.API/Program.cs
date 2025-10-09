@@ -50,7 +50,9 @@ builder.Services.AddProblemDetails();
 
 
 builder.Services.AddDbContext<CityInfoContext>(DbContextOptions
-     => DbContextOptions.UseSqlite("Data Source=CityInfo.db"));
+     => DbContextOptions.UseSqlite(builder.Configuration["ConnectionStrings:CityInfoDBConnectionString"]));
+
+builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
