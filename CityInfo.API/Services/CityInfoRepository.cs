@@ -69,12 +69,8 @@ namespace CityInfo.API.Services
             _cityInfoContext.PointsofInterest.Remove(pointOfInterest);
         }
 
-        public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery)
+        public async Task<(IEnumerable<City>, PaginationMetaData)> GetCitiesAsync(string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10)
         {
-            if (string.IsNullOrEmpty(name) && string.IsNullOrWhiteSpace(searchQuery))
-            {
-                return await GetCitiesAsync();
-            }
 
             var collection = _cityInfoContext.Cities as IQueryable<City>;
             if (!string.IsNullOrEmpty(name))
@@ -88,8 +84,13 @@ namespace CityInfo.API.Services
                 searchQuery = searchQuery.Trim();
                 collection = collection.Where(c => c.Name.Contains(searchQuery) || (c.Description != null) && c.Description.Contains(searchQuery));
             }
+            var totalItemCount = await collection.CountAsync();
 
-            return await collection.OrderBy(c => c.Name).ToListAsync();
+            var pagigationMetaData = new PaginationMetaData(totalItemCount, pageSize, pageNumber);
+
+            var CollectionToReturn= await collection.OrderBy(c => c.Name).Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
+
+            return (CollectionToReturn, pagigationMetaData);
         }
     }
 }
