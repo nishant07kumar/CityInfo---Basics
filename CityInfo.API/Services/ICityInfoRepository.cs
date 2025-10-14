@@ -24,6 +24,9 @@ namespace CityInfo.API.Services
         void DeletePointOfIntrest(PointOfInterest pointOfInterest);
 
 
+        Task<bool> CityNameMatchesCityId(string? cityName, int cityId);
+
+
 
     }
 }

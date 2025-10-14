@@ -13,8 +13,6 @@ namespace CityInfo.API.Services
             this._cityInfoContext = cityInfoContext ?? throw new ArgumentNullException(nameof(cityInfoContext));
         }
 
-
-
         public async Task<bool> CityExistsAsync(int cityid)
         {
             return await _cityInfoContext.Cities.AnyAsync(c => c.Id == cityid);
@@ -88,9 +86,14 @@ namespace CityInfo.API.Services
 
             var pagigationMetaData = new PaginationMetaData(totalItemCount, pageSize, pageNumber);
 
-            var CollectionToReturn= await collection.OrderBy(c => c.Name).Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
+            var CollectionToReturn = await collection.OrderBy(c => c.Name).Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
 
             return (CollectionToReturn, pagigationMetaData);
+        }
+
+        public async Task<bool> CityNameMatchesCityId(string? cityName, int cityId)
+        {
+            return await _cityInfoContext.Cities.AnyAsync(c => c.Id == cityId && c.Name == cityName);
         }
     }
 }
