@@ -6,8 +6,8 @@ using System.Runtime.CompilerServices;
 
 namespace CityInfo.API.Controllers
 {
-    [Route("api/files")]
-    [Authorize]
+    [Route("api/v{version:apiversion}/files")]
+    //[Authorize]
     [ApiController]
     public class FilesController : ControllerBase
     {

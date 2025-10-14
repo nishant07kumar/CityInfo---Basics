@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,9 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers
 {
-    [Route("api/cities/{cityId}/pointsofinterest")]
-    [Authorize("MustBeFromParis")]
+    [Route("api/v{apiverson:apiversion}/cities/{cityId}/pointsofinterest")]
+    //[Authorize("MustBeFromParis")]
     [ApiController]
+    [ApiVersion(2)]
     public class PointsOfIntrestController : ControllerBase
     {
 

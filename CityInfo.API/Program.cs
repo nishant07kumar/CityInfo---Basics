@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Tokens.Experimental;
 using Serilog;
+using Microsoft.AspNetCore.Mvc;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -82,6 +83,15 @@ builder.Services.AddAuthorization(options=>
         policy.RequireClaim("city", "Paris");
     });
 });
+
+builder.Services.AddApiVersioning(setupAction => 
+{
+
+    setupAction.ReportApiVersions = true;
+    setupAction.AssumeDefaultVersionWhenUnspecified = true;
+    setupAction.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+
+}).AddMvc();
 
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
