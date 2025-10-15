@@ -48,7 +48,16 @@ namespace CityInfo.API.Controllers
         }
 
 
+        /// <summary>
+        /// Get a City by id with option to include points of interest
+        /// </summary>
+        /// <param name="id">city of id to fetch the city</param>
+        /// <param name="includePointsOfInterest">optional boolean parameter for including a point of intrest</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> GetCity(int id, bool includePointsOfInterest = false)
         {
             var cityEntity = await cityInfoRepository.GetCityAsync(id, includePointsOfInterest);
